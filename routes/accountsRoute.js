@@ -3,6 +3,12 @@ const db = require('../data/dbConfig');
 
 const router = express.Router();
 
+/**
+ * GET / READ ALL
+ * Endpoint: `/accounts`
+ * description: get all accounts data.
+ * SELECT * FROM `accounts`
+ */
 router.get('/', async (req, res, next) => {
   try {
     res.json(await db('accounts').select());
@@ -11,6 +17,12 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+/**
+ * GET / READ specific :id
+ * Endpoint: `/accounts/:id`
+ * description: get account with matching :id
+ * SELECT * FROM `accounts` where id = 'req.params.id' LIMIT 1;
+ */
 router.get('/:id', async (req, res, next) => {
   try {
     res.json(
@@ -23,6 +35,13 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
+/**
+ * POST / CREATE
+ * Endpoint: `/accounts`
+ * Description: insert on post in first account where id matches.
+ * INSERT INTO `accounts` (<table values>) VALUES (<value..to insert..>);
+ * SELECT * FROM `accounts` WHERE id = (destructured id) LIMIT 1;
+ */
 router.post('/', async (req, res, next) => {
   try {
     const payload = {
@@ -30,6 +49,7 @@ router.post('/', async (req, res, next) => {
       budget: req.body.budget
     };
     const [id] = await db('accounts').insert(payload);
+    // { id: id[0] }
     res.json(
       await db('accounts')
         .where('id', id)
@@ -40,6 +60,11 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+/**
+ * PUT / UPDATE
+ * Endpoint: `/accounts/:id`
+ * description:
+ */
 router.put('/:id', async (req, res, next) => {
   try {
     const updatePayload = {
@@ -65,7 +90,7 @@ router.delete('/:id', async (req, res, next) => {
     await db('accounts')
       .where({ id: req.params.id })
       .del();
-    res.json(204).end();
+    res.json(204);
   } catch (err) {
     next(err);
   }
